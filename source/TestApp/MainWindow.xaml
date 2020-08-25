@@ -10,55 +10,72 @@
 -->
 
 <Window
-	x:Class="TestApp.MainWindow"
-	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	xmlns:avalonDock="https://github.com/Dirkster99/AvalonDock"
-	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-	xmlns:local="clr-namespace:TestApp"
-	xmlns:winformsIntegration="clr-namespace:System.Windows.Forms.Integration;assembly=WindowsFormsIntegration"
-	Title="MainWindow"
-	Width="525"
-	Height="350"
-	UseLayoutRounding="True">
-	<Grid x:Name="layoutRoot">
-		<Grid.RowDefinitions>
-			<RowDefinition Height="Auto" />
-			<RowDefinition Height="*" />
-		</Grid.RowDefinitions>
-		<Menu Grid.Row="0">
-			<MenuItem Header="Edit">
-				<MenuItem Command="Undo" />
-				<MenuItem Command="Redo" />
-				<Separator />
-				<MenuItem Command="Cut" />
-				<MenuItem Command="Copy" />
-				<MenuItem Command="Paste" />
-			</MenuItem>
-			<MenuItem Header="Layout">
-				<MenuItem Header="Save">
-					<MenuItem Click="OnSaveLayout" Header="Layout_1" />
-					<MenuItem Click="OnSaveLayout" Header="Layout_2" />
-					<MenuItem Click="OnSaveLayout" Header="Layout_3" />
-					<MenuItem Click="OnSaveLayout" Header="Layout_4" />
-				</MenuItem>
-				<MenuItem Header="Load">
-					<MenuItem Click="OnLoadLayout" Header="Layout_1" />
-					<MenuItem Click="OnLoadLayout" Header="Layout_2" />
-					<MenuItem Click="OnLoadLayout" Header="Layout_3" />
-					<MenuItem Click="OnLoadLayout" Header="Layout_4" />
-				</MenuItem>
-				<MenuItem Click="OnDumpToConsole" Header="Dump To Console" />
-				<MenuItem Click="OnUnloadManager" Header="Unload Manager" />
-				<MenuItem Click="OnLoadManager" Header="Load Manager" />
-				<MenuItem Click="OnShowHeader" Header="Show header" />
-			</MenuItem>
-			<MenuItem Header="Tools">
-				<MenuItem Click="OnShowWinformsWindow" Header="WinForms Window" />
-				<MenuItem Click="OnShowToolWindow1" Header="Tool Window1" />
-				<MenuItem Click="OnNewFloatingWindow" Header="New floating window" />
-			</MenuItem>
-		</Menu>
+    x:Class="TestApp.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:avalonDock="https://github.com/Dirkster99/AvalonDock"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:TestApp"
+    xmlns:winformsIntegration="clr-namespace:System.Windows.Forms.Integration;assembly=WindowsFormsIntegration"
+    Title="MainWindow"
+    Width="525"
+    Height="350"
+    UseLayoutRounding="True">
+    <Grid x:Name="layoutRoot">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Menu Grid.Row="0">
+            <MenuItem Header="Edit">
+                <MenuItem Command="Undo" />
+                <MenuItem Command="Redo" />
+                <Separator />
+                <MenuItem Command="Cut" />
+                <MenuItem Command="Copy" />
+                <MenuItem Command="Paste" />
+            </MenuItem>
+            <MenuItem Header="Layout">
+                <MenuItem Header="Save">
+                    <MenuItem Click="OnSaveLayout" Header="Layout_1" />
+                    <MenuItem Click="OnSaveLayout" Header="Layout_2" />
+                    <MenuItem Click="OnSaveLayout" Header="Layout_3" />
+                    <MenuItem Click="OnSaveLayout" Header="Layout_4" />
+                </MenuItem>
+                <MenuItem Header="Load">
+                    <MenuItem Click="OnLoadLayout" Header="Layout_1" />
+                    <MenuItem Click="OnLoadLayout" Header="Layout_2" />
+                    <MenuItem Click="OnLoadLayout" Header="Layout_3" />
+                    <MenuItem Click="OnLoadLayout" Header="Layout_4" />
+                </MenuItem>
+                <MenuItem Click="OnDumpToConsole" Header="Dump To Console" />
+                <MenuItem Click="OnUnloadManager" Header="Unload Manager" />
+                <MenuItem Click="OnLoadManager" Header="Load Manager" />
+                <MenuItem Click="OnShowHeader" Header="Show header" />
+            </MenuItem>
+            <MenuItem Header="Tools">
+                <MenuItem Click="OnShowWinformsWindow" Header="WinForms Window" />
+                <MenuItem Click="OnShowToolWindow1" Header="Tool Window1" />
+                <MenuItem Click="OnNewFloatingWindow" Header="New floating window" />
+            </MenuItem>
+            <MenuItem Header="Themes" ItemsSource="{Binding Themes}">
+                <MenuItem.ItemContainerStyle>
+                    <Style TargetType="MenuItem">
+                        <Setter Property="Header" Value="{Binding Name}" />
+                        <Setter Property="IsCheckable" Value="True" />
+                        <Setter Property="IsChecked">
+                            <Setter.Value>
+                                <MultiBinding Converter="{x:Static local:EqualityConverter.Instance}" Mode="OneWay">
+                                    <Binding Path="Theme"/>
+                                    <Binding Path="Theme" ElementName="dockManager" />
+                                </MultiBinding>
+                            </Setter.Value>
+                        </Setter>
+                        <EventSetter Event="Click" Handler="OnTheme_Click" />
+                    </Style>
+                </MenuItem.ItemContainerStyle>
+            </MenuItem>
+        </Menu>
 
 		<DockingManager
 			x:Name="dockManager"
@@ -112,7 +129,7 @@
 							</LayoutDocument>
 						</LayoutDocumentPane>
 					</LayoutDocumentPaneGroup>
-					<LayoutAnchorablePaneGroup DockWidth="50">
+					<LayoutAnchorablePaneGroup DockWidth="50" Orientation="Vertical">
 						<LayoutAnchorablePane>
 							<LayoutAnchorable
 								Title="Tool Window 1"
@@ -123,10 +140,27 @@
 									<TextBox Text="{Binding TestTimer, Mode=OneWay, StringFormat='Tool Window 1 Attached to Timer ->\{0\}'}" />
 								</StackPanel>
 							</LayoutAnchorable>
-							<LayoutAnchorable Title="Tool Window 2" ContentId="toolWindow2">
-								<TextBlock Text="{Binding FocusedElement}" />
-							</LayoutAnchorable>
-						</LayoutAnchorablePane>
+                        </LayoutAnchorablePane>
+                        <LayoutAnchorablePane>
+                            <LayoutAnchorable Title="Tool Window 2" ContentId="toolWindow2">
+                                <DockPanel>
+                                    <Menu DockPanel.Dock="Top">
+                                        <MenuItem Header="Item1">
+                                            <MenuItem Header="SubItem11" />
+                                            <MenuItem Header="SubItem12" />
+                                            <MenuItem Header="SubItem13" />
+                                        </MenuItem>
+                                        <MenuItem Header="Item2">
+                                            <MenuItem Header="SubItem21" />
+                                            <MenuItem Header="SubItem22" />
+                                            <MenuItem Header="SubItem23" />
+                                        </MenuItem>
+                                        <MenuItem Header="Item3" />
+                                    </Menu>
+                                    <TextBlock Text="{Binding FocusedElement}" />
+                                </DockPanel>
+                            </LayoutAnchorable>
+                        </LayoutAnchorablePane>
 					</LayoutAnchorablePaneGroup>
 				</LayoutPanel>
 

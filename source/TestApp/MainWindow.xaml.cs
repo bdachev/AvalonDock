@@ -20,6 +20,10 @@ using System.IO;
 using AvalonDock.Layout.Serialization;
 using AvalonDock;
 using System.Diagnostics.CodeAnalysis;
+using AvalonDock.Themes;
+using System.Windows.Data;
+using System.Globalization;
+using System.Collections;
 
 namespace TestApp
 {
@@ -261,6 +265,49 @@ namespace TestApp
 			};
             anchorable.AddToLayout(dockManager,AnchorableShowStrategy.Most);
             anchorable.Float();
+        }
+
+		class ThemeWithName
+        {
+			public string Name { get; }
+			public Theme Theme { get; }
+            public ThemeWithName(string name, Theme theme)
+            {
+				Name = name;
+				Theme = theme;
+            }
+        }
+        private void OnTheme_Click(object sender, RoutedEventArgs e)
+        {
+			var theme = sender is MenuItem mi ? mi.DataContext as ThemeWithName : null;
+			dockManager.Theme = theme.Theme;
+        }
+
+		public IEnumerable Themes { get; } = new []
+			{
+				new ThemeWithName("Generic", new GenericTheme()),
+				new ThemeWithName("VS2013 Light", new Vs2013LightTheme()),
+				new ThemeWithName("VS2013 Dark", new Vs2013DarkTheme()),
+				new ThemeWithName("VS2013 Blue", new Vs2013BlueTheme()),
+				new ThemeWithName("VS2010", new VS2010Theme()),
+				new ThemeWithName("Expression Light", new ExpressionLightTheme()),
+				new ThemeWithName("Expression Dark", new ExpressionDarkTheme()),
+				new ThemeWithName("Metro", new MetroTheme()),
+				new ThemeWithName("Aero", new AeroTheme()),
+			};
+    }
+
+	class EqualityConverter : IMultiValueConverter
+	{
+		public static EqualityConverter Instance { get; } = new EqualityConverter();
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        {
+			return values.Length >= 2 && (values[0] == null && values[1] == null || values[0] != null && values[1] != null && values[0].Equals(values[1]));
+        }
+
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
         }
     }
 }
