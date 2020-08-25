@@ -1,4 +1,4 @@
-/************************************************************************
+﻿/************************************************************************
    AvalonDock
 
    Copyright (C) 2007-2013 Xceed Software Inc.
@@ -334,7 +334,7 @@ namespace AvalonDock.Layout
 
 		/// <summary>Show the content.</summary>
 		/// <remarks>Try to show the content where it was previously hidden.</remarks>
-		public void Show()
+		public void Show(bool activate = true)
 		{
 			if (IsVisible) return;
 			if (!IsHidden) throw new InvalidOperationException();
@@ -354,8 +354,11 @@ namespace AvalonDock.Layout
 					previousContainerAsLayoutGroup.InsertChildAt(previousContainerAsLayoutGroup.ChildrenCount, this);
 
 				Parent = previousContainerAsLayoutGroup;
-				IsSelected = true;
-				IsActive = true;
+				if (activate)
+				{
+					IsSelected = true;
+					IsActive = true;
+				}
 			}
 
 			root?.Manager?.LayoutUpdateStrategy?.AfterInsertAnchorable(root as LayoutRoot, this);
@@ -598,13 +601,14 @@ namespace AvalonDock.Layout
 
 		private void UpdateParentVisibility()
 		{
-			// Element is Hidden since it has no parent but a previous parent
-			if (PreviousContainer != null && Parent == null)
-			{
-				// Go back to using previous parent
-				Parent = PreviousContainer;
-				////        PreviousContainer = null;
-			}
+			// TRIO: remove that as we restore tools other way
+			//// Element is Hidden since it has no parent but a previous parent
+			//if (PreviousContainer != null && Parent == null)
+			//{
+			//	// Go back to using previous parent
+			//	Parent = PreviousContainer;
+			//	////        PreviousContainer = null;
+			//}
 
 			if (Parent is ILayoutElementWithVisibility parentPane)
 				parentPane.ComputeVisibility();

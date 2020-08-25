@@ -974,7 +974,8 @@ namespace Microsoft.Windows.Shell
 
 		private void _UnhookCustomChrome()
 		{
-			Assert.IsNotDefault(_hwnd);
+			// TRIO: not always valid (see DockingManager.CreateUIElementForModel() fix when creating LayoutAnchorableFloatingWindowControl)
+			//Assert.IsNotDefault(_hwnd);
 			Assert.IsNotNull(_window);
 			if (!_isHooked) return;
 			_hwndSource.RemoveHook(_WndProc);
